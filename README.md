@@ -1,60 +1,30 @@
-# \# Xray Azure Blob Prometheus Exporter
+# Xray Azure Blob Prometheus Exporter
 
-# 
+Prometheus metrics exporter that reads Xray-core user traffic statistics from JSON files stored in **Azure Blob Storage**.
 
-# Prometheus metrics exporter that reads Xray-core user traffic statistics from JSON files stored in \*\*Azure Blob Storage\*\*.
+## Features
 
-# 
+- Reads latest `<server_id>/<timestamp>.json` file
+- Exposes per-user uplink/downlink/total traffic counters
+- Uses Azure AD authentication (managed identity, workload identity, CLI, etc.)
+- Configured entirely via environment variables
+- Simple `/health` endpoint
 
-# \## Features
+## Metrics
 
-# 
+- `xray_user_uplink_bytes_total{server_id, user}`
+- `xray_user_downlink_bytes_total{server_id, user}`
+- `xray_user_traffic_bytes_total{server_id, user}`
+- `xray_last_update_success`
+- `xray_last_blob_timestamp_seconds`
 
-# \- Reads latest `<server\_id>/<timestamp>.json` file
+## Quick Start (Docker)
 
-# \- Exposes per-user uplink/downlink/total traffic counters
-
-# \- Uses Azure AD authentication (managed identity, workload identity, CLI, etc.)
-
-# \- Configured entirely via environment variables
-
-# \- Simple `/health` endpoint
-
-# 
-
-# \## Metrics
-
-# 
-
-# \- `xray\_user\_uplink\_bytes\_total{server\_id, user}`
-
-# \- `xray\_user\_downlink\_bytes\_total{server\_id, user}`
-
-# \- `xray\_user\_traffic\_bytes\_total{server\_id, user}`
-
-# \- `xray\_last\_update\_success`
-
-# \- `xray\_last\_blob\_timestamp\_seconds`
-
-# 
-
-# \## Quick Start (Docker)
-
-# 
-
-# ```bash
-
-# docker run -d --name xray-exporter \\
-
-# &nbsp; -p 9101:9101 \\
-
-# &nbsp; -e AZURE\_STORAGE\_ACCOUNT\_NAME="mystorageacct" \\
-
-# &nbsp; -e AZURE\_CONTAINER\_NAME="xray-stats" \\
-
-# &nbsp; -e XRAY\_SERVER\_ID="sg-sin-01" \\
-
-# &nbsp; -e METRICS\_UPDATE\_EVERY\_SECONDS=30 \\
-
-# &nbsp; ghcr.io/yourusername/xray-azureblob-exporter:latest
-
+```bash
+docker run -d --name xray-exporter \
+  -p 9101:9101 \
+  -e AZURE_STORAGE_ACCOUNT_NAME="mystorageacct" \
+  -e AZURE_CONTAINER_NAME="xray-stats" \
+  -e XRAY_SERVER_ID="sg-sin-01" \
+  -e METRICS_UPDATE_EVERY_SECONDS=30 \
+  ghcr.io/yourusername/xray-azureblob-exporter:latest
